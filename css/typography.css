@@ -1,0 +1,40 @@
+* {
+    box-sizing: border-box;
+}
+
+body,
+button,
+input,
+textarea {
+    font: 400 16px/1.5 "Inter", system-ui, sans-serif;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+}
+
+.ui-caption,
+.debug-panel,
+.choice-label {
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.dialogue-line {
+    font-size: clamp(1rem, 1.12vw, 1.15rem);
+    line-height: 1.9;
+    letter-spacing: 0.02em;
+}

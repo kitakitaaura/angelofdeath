@@ -1,0 +1,26 @@
+:root {
+    --bg: #07080f;
+    --surface: #10121d;
+    --surface-strong: #181c2d;
+    --text: #f4f5fb;
+    --muted: #9fa2c0;
+    --accent: #7f85ff;
+    --accent-soft: rgba(127, 133, 255, 0.18);
+    --border: rgba(255, 255, 255, 0.08);
+    --shadow: 0 24px 80px rgba(0, 0, 0, 0.22);
+    --radius: 22px;
+    --transition: 0.28s ease;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, system-ui, sans-serif;
+    background: radial-gradient(circle at top, #11131f 0%, #06070e 45%, #04050a 100%);
+    color: var(--text);
+    overflow: hidden;
+}

@@ -1,0 +1,585 @@
+body {
+    background-color: var(--bg);
+}
+
+#app {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.visual-root {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.ui-shell {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+}
+
+.audio-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 2000;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(5, 6, 12, 0.88);
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.35);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.audio-toggle:hover {
+    transform: scale(1.04);
+    background: rgba(5, 6, 12, 0.98);
+}
+
+.audio-toggle.muted {
+    color: #ff4d4d;
+}
+
+.final-ending-overlay,
+.final-ending-message {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+}
+
+.final-ending-overlay {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    opacity: 0;
+    transition: opacity 2s ease;
+    z-index: 99999;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+}
+
+.final-ending-overlay.visible {
+    opacity: 1;
+}
+
+.final-ending-message {
+    position: relative;
+    color: #777;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-align: center;
+    transform: scale(1);
+    transition: transform 0.25s ease;
+    pointer-events: none;
+}
+
+.final-ending-message.final-ending-glitch {
+    color: #555;
+    transform: scale(1.05);
+}
+
+.visual-stage {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.08), transparent 26%),
+        radial-gradient(circle at 72% 34%, rgba(255, 255, 255, 0.04), transparent 24%),
+        linear-gradient(180deg, rgba(7, 8, 15, 0.92), rgba(4, 5, 10, 0.98));
+    transform-origin: center;
+    transition: transform 1.2s ease, filter 1.2s ease, opacity 1.2s ease;
+}
+
+.visual-stage::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 52% 20%, rgba(255, 255, 255, 0.05), transparent 40%),
+        radial-gradient(circle at 18% 82%, rgba(127, 133, 255, 0.05), transparent 24%);
+    opacity: 0.7;
+    pointer-events: none;
+    transition: transform 1.2s ease, opacity 1.2s ease;
+}
+
+.visual-stage[data-cinematic="still"] {
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: saturate(0.98) blur(0);
+}
+
+.visual-stage[data-cinematic="attention"] {
+    transform: translate3d(0, -0.5px, 0) scale(1.002);
+    filter: saturate(1.05) blur(0.03px);
+}
+
+.visual-stage[data-cinematic="attention"]::before {
+    transform: translateY(-2px) scale(1.01);
+    opacity: 0.82;
+}
+
+.visual-stage[data-cinematic="realization"] {
+    transform: translate3d(0, -1px, 0) scale(1.006);
+    filter: saturate(1.08) blur(0.08px);
+}
+
+.visual-stage[data-cinematic="realization"]::before {
+    transform: translateY(-4px) scale(1.02);
+    opacity: 0.95;
+}
+
+.visual-stage[data-cinematic="release"] {
+    transform: translate3d(0, 0.3px, 0) scale(1.001);
+    filter: saturate(0.96) blur(0);
+}
+
+.visual-stage[data-cinematic="release"]::before {
+    transform: translateY(1px) scale(1);
+    opacity: 0.7;
+}
+
+.layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.layer--particles {
+    pointer-events: auto;
+}
+
+.layer--particles[data-cinematic="still"] .particle {
+    animation: drift-slow 36s ease-in-out infinite alternate;
+    opacity: 0.14;
+}
+
+.layer--particles[data-cinematic="attention"] .particle {
+    animation: drift-slow 26s ease-in-out infinite alternate;
+    opacity: 0.18;
+}
+
+.layer--particles[data-cinematic="realization"] .particle {
+    animation: none;
+    opacity: 0.08;
+    transform: translate3d(calc(var(--drift-x) * 0.3), calc(var(--drift-y) * 0.3), 0);
+}
+
+.layer--particles[data-cinematic="release"] .particle {
+    animation: drift-slow 45s ease-in-out infinite alternate;
+    opacity: 0.11;
+}
+
+.layer--background {
+    z-index: 0;
+}
+
+.layer--shapes {
+    z-index: 1;
+}
+
+.layer--particles {
+    z-index: 2;
+}
+
+.layer--symbols {
+    z-index: 3;
+}
+
+.particle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+    opacity: 0.18;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+    will-change: transform, opacity;
+}
+
+.layer--particles.hovering .particle {
+    transform: translate(calc(var(--drift-x) + var(--pointer-x)), calc(var(--drift-y) + var(--pointer-y)));
+    opacity: 0.32;
+}
+
+@keyframes drift-slow {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+
+    to {
+        transform: translate3d(4px, -2px, 0);
+    }
+}
+
+.scene-symbol {
+    position: absolute;
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: rgba(255, 255, 255, 0.95);
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0.2;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.4s ease, opacity 0.4s ease, background 0.4s ease;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.scene-symbol.memory {
+    background: rgba(186, 175, 255, 0.16);
+}
+
+.scene-symbol.death {
+    background: rgba(220, 140, 160, 0.16);
+}
+
+.scene-symbol.time {
+    background: rgba(173, 190, 255, 0.16);
+}
+
+.scene-shape {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(0);
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    mix-blend-mode: screen;
+}
+
+.scene-shape.ring {
+    background: transparent;
+}
+
+.scene-shape.line {
+    border-radius: 1px;
+}
+
+.visual-stage.fading {
+    opacity: 0;
+    transition: opacity 0.7s ease;
+}
+
+.dialogue-copy {
+    margin-top: 1rem;
+    color: var(--text);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.24s ease, transform 0.24s ease, filter 0.24s ease, letter-spacing 0.24s ease;
+}
+
+.dialogue-copy.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.presentation--fade {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+    animation: appear-fade 0.9s ease forwards;
+}
+
+.presentation--slide {
+    opacity: 0;
+    transform: translateY(20px) skewY(2deg);
+    animation: appear-slide 0.88s ease forwards;
+}
+
+.presentation--blur {
+    opacity: 0;
+    filter: blur(10px);
+    animation: appear-blur 0.95s ease forwards;
+}
+
+.presentation--grow {
+    opacity: 0;
+    transform: scale(0.92);
+    animation: appear-grow 0.9s ease forwards;
+}
+
+.presentation--instant {
+    opacity: 1;
+    transform: translateY(0);
+    transition: none;
+}
+
+.presentation--type,
+.presentation--word {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes appear-fade {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes appear-slide {
+    to {
+        opacity: 1;
+        transform: translateY(0) skewY(0deg);
+    }
+}
+
+@keyframes appear-blur {
+    to {
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+@keyframes appear-grow {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.visual-root {
+    pointer-events: none;
+}
+
+.ui-shell {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 2.5rem;
+    pointer-events: none;
+}
+
+.dialogue-panel {
+    position: relative;
+    width: min(860px, 100%);
+    margin-left: auto;
+    margin-right: auto;
+    background: rgba(7, 8, 15, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 28px;
+    padding: 2rem 2.4rem;
+    box-shadow: var(--shadow);
+    pointer-events: auto;
+}
+
+.dialogue-copy {
+    margin-top: 1rem;
+    color: var(--text);
+}
+
+.dialogue-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+.dialogue-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.dialogue-button {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 0.95rem 1.5rem;
+    cursor: pointer;
+    transition: transform var(--transition), background var(--transition), color var(--transition);
+    pointer-events: auto;
+}
+
+.dialogue-button:hover {
+    background: rgba(127, 133, 255, 0.14);
+    transform: translateY(-1px);
+}
+
+.glitch-overlay {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 1000;
+}
+
+.glitch-overlay.visible {
+    opacity: 1;
+}
+
+.glitch-word {
+    position: relative;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: clamp(10rem, 18vw, 24rem);
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 0.9;
+    text-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+    transform: skewX(-8deg);
+}
+
+.glitch-word::before,
+.glitch-word::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    color: rgba(255, 255, 255, 0.85);
+    clip-path: inset(0 0 0 0);
+    animation: glitch-slice 2.4s infinite ease-in-out;
+}
+
+.glitch-word::before {
+    left: 2px;
+    text-shadow: -2px 0 red;
+    animation-delay: 0s;
+}
+
+.glitch-word::after {
+    left: -2px;
+    text-shadow: -2px 0 cyan;
+    animation-delay: 0.15s;
+}
+
+@keyframes glitch-slice {
+
+    0%,
+    100% {
+        clip-path: inset(0 0 0 0);
+        transform: translateX(0);
+    }
+
+    8% {
+        clip-path: inset(20% 0 62% 0);
+        transform: translateX(-4px);
+    }
+
+    16% {
+        clip-path: inset(45% 0 42% 0);
+        transform: translateX(5px);
+    }
+
+    24% {
+        clip-path: inset(20% 0 60% 0);
+        transform: translateX(-3px);
+    }
+
+    32% {
+        clip-path: inset(60% 0 10% 0);
+        transform: translateX(6px);
+    }
+
+    40% {
+        clip-path: inset(10% 0 75% 0);
+        transform: translateX(-5px);
+    }
+
+    48% {
+        clip-path: inset(35% 0 40% 0);
+        transform: translateX(4px);
+    }
+
+    56% {
+        clip-path: inset(50% 0 20% 0);
+        transform: translateX(-2px);
+    }
+
+    64% {
+        clip-path: inset(5% 0 80% 0);
+        transform: translateX(3px);
+    }
+
+    72% {
+        clip-path: inset(30% 0 50% 0);
+        transform: translateX(-4px);
+    }
+
+    80% {
+        clip-path: inset(25% 0 55% 0);
+        transform: translateX(5px);
+    }
+
+    88% {
+        clip-path: inset(15% 0 65% 0);
+        transform: translateX(-3px);
+    }
+}
+
+.debug-panel {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(5, 6, 12, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    z-index: 50;
+    pointer-events: auto;
+}
+
+.speed-btn {
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.25rem 0.75rem;
+}
+
+.speed-btn.active,
+.speed-btn:hover {
+    color: var(--text);
+}
+
+.others-dot {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--muted);
+    pointer-events: none;
+    z-index: 40;
+}
+
+.others-dot.hidden {
+    display: none;
+}
+
+.others-dot .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+}
+
+@media (max-width: 680px) {
+    .ui-shell {
+        padding: 1.5rem;
+    }
+
+    .dialogue-panel {
+        border-radius: 22px;
+        padding: 1.5rem;
+    }
+}
